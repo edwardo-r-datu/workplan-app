@@ -1,0 +1,29 @@
+.workplan-board {
+  min-height: 100vh;
+  padding: 24px;
+
+  &__header {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+  }
+
+  &__columns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: start;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}

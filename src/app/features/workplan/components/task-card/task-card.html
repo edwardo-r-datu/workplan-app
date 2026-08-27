@@ -1,0 +1,29 @@
+<div class="task-card" [class.overdue]="isOverdue()">
+  <div class="task-card__header">
+    <span class="task-card__priority" [class]="'priority--' + task.priority.toLowerCase()">
+      {{ task.priority }}
+    </span>
+    <button class="task-card__delete" (click)="onDelete()">✕</button>
+  </div>
+
+  <h3 class="task-card__title">{{ task.title }}</h3>
+  <p class="task-card__description">{{ task.description }}</p>
+
+  <div class="task-card__meta">
+    <span>👤 {{ task.assignee }}</span>
+    <span>📅 {{ task.dueDate }}</span>
+  </div>
+
+  <div class="task-card__tags">
+    <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+  </div>
+
+  <div class="task-card__actions">
+    <select [value]="task.status" (change)="onStatusChange($any($event.target).value)">
+      <option [value]="TaskStatus.Todo">To Do</option>
+      <option [value]="TaskStatus.InProgress">In Progress</option>
+      <option [value]="TaskStatus.Done">Done</option>
+      <option [value]="TaskStatus.Cancelled">Cancelled</option>
+    </select>
+  </div>
+</div>

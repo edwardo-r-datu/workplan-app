@@ -1,0 +1,35 @@
+<div class="workplan-board">
+  <header class="workplan-board__header">
+    <h1>Workplan Board</h1>
+  </header>
+
+  <div class="workplan-board__columns">
+    <app-task-list
+      title="To Do"
+      [tasks]="getTasksByStatus(TaskStatus.Todo)"
+      (statusChanged)="onStatusChanged($event)"
+      (taskDeleted)="onTaskDeleted($event)"
+    />
+
+    <app-task-list
+      title="In Progress"
+      [tasks]="getTasksByStatus(TaskStatus.InProgress)"
+      (statusChanged)="onStatusChanged($event)"
+      (taskDeleted)="onTaskDeleted($event)"
+    />
+
+    <app-task-list
+      title="Done"
+      [tasks]="getTasksByStatus(TaskStatus.Done)"
+      (statusChanged)="onStatusChanged($event)"
+      (taskDeleted)="onTaskDeleted($event)"
+    />
+
+    <app-task-list
+      title="Cancelled"
+      [tasks]="getTasksByStatus(TaskStatus.Cancelled)"
+      (statusChanged)="onStatusChanged($event)"
+      (taskDeleted)="onTaskDeleted($event)"
+    />
+  </div>
+</div>

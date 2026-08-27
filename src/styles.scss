@@ -1,1 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #f0f2f5;
+  --color-surface: #ffffff;
+  --color-border: #e0e0e0;
+  --color-text: #1a1a2e;
+  --color-text-muted: #6b7280;
+  --color-primary: #4f46e5;
+
+  --priority-low: #22c55e;
+  --priority-medium: #f59e0b;
+  --priority-high: #ef4444;
+  --priority-critical: #7c3aed;
+
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+select {
+  font-family: inherit;
+  cursor: pointer;
+}
