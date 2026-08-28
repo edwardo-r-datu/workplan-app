@@ -1,7 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { Task, TaskStatus, Priority, CreateTaskDto } from '../../../../core/models';
-import { TaskService } from '../../../../core/services/task';
+import { AppState } from '../../../../store';
+import {
+  loadTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+} from '../../../../store/task/task.actions';
+import {
+  selectAllTasks,
+  selectTasksLoading,
+  selectTasksError,
+} from '../../../../store/task/task.selectors';
 
 @Component({
   selector: 'app-workplan-board',
@@ -29,18 +41,17 @@ export class WorkplanBoard implements OnInit {
     tags: [],
   };
 
-  constructor(private taskService: TaskService) {}
+  // Store is injected via DI — the generic type tells TypeScript the shape of the state
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    this.taskService.tasks$.subscribe(tasks => (this.tasks = tasks));
+    // Dispatch action — the effect handles the HTTP call
+    this.store.dispatch(loadTasks());
 
-    this.taskService.loadTasks().subscribe({
-      next: () => (this.loading = false),
-      error: () => {
-        this.loading = false;
-        this.error = 'Failed to load tasks. Is the API server running? (npm run api)';
-      },
-    });
+    // Select slices of state — returns Observables, subscribe to sync to local properties
+    this.store.select(selectAllTasks).subscribe(tasks => (this.tasks = tasks));
+    this.store.select(selectTasksLoading).subscribe(loading => (this.loading = loading));
+    this.store.select(selectTasksError).subscribe(error => (this.error = error ?? ''));
   }
 
   getTasksByStatus(status: TaskStatus): Task[] {
@@ -48,34 +59,30 @@ export class WorkplanBoard implements OnInit {
   }
 
   onStatusChanged({ task, status }: { task: Task; status: TaskStatus }): void {
-    this.taskService.updateTask(task.id, { status }).subscribe();
+    this.store.dispatch(updateTask({ id: task.id, dto: { status } }));
   }
 
   onTaskDeleted(id: number): void {
-    this.taskService.deleteTask(id).subscribe();
+    this.store.dispatch(deleteTask({ id }));
   }
 
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
   }
 
-  // Template-driven form submit — ngForm reference passed from template
   onAddTask(form: NgForm): void {
     if (form.invalid) return;
-
-    this.taskService.createTask({ ...this.newTask }).subscribe(() => {
-      // Reset the form and model after successful save
-      form.resetForm();
-      this.newTask = {
-        title: '',
-        description: '',
-        priority: Priority.Medium,
-        status: TaskStatus.Todo,
-        assignee: '',
-        dueDate: '',
-        tags: [],
-      };
-      this.showAddForm = false;
-    });
+    this.store.dispatch(createTask({ dto: { ...this.newTask } }));
+    form.resetForm();
+    this.newTask = {
+      title: '',
+      description: '',
+      priority: Priority.Medium,
+      status: TaskStatus.Todo,
+      assignee: '',
+      dueDate: '',
+      tags: [],
+    };
+    this.showAddForm = false;
   }
 }
