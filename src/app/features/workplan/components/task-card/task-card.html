@@ -1,4 +1,4 @@
-<div class="task-card" [class.overdue]="isOverdue()">
+<div class="task-card" [appOverdueHighlight]="task.dueDate">
   <div class="task-card__header">
     <span class="task-card__priority" [class]="'priority--' + task.priority.toLowerCase()">
       {{ task.priority | priorityLabel }}
