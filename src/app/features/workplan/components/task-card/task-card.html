@@ -1,7 +1,7 @@
 <div class="task-card" [class.overdue]="isOverdue()">
   <div class="task-card__header">
     <span class="task-card__priority" [class]="'priority--' + task.priority.toLowerCase()">
-      {{ task.priority }}
+      {{ task.priority | priorityLabel }}
     </span>
     <button class="task-card__delete" (click)="onDelete()">✕</button>
   </div>
@@ -13,11 +13,12 @@
 
   <div class="task-card__meta">
     <span>👤 {{ task.assignee }}</span>
-    <span>📅 {{ task.dueDate }}</span>
+    <span>📅 {{ task.dueDate | date:'mediumDate' }}</span>
+    <span title="{{ task.createdAt | date:'medium' }}">🕐 {{ task.createdAt | taskAge }}</span>
   </div>
 
   <div class="task-card__tags">
-    <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+    <span class="tag" *ngFor="let tag of task.tags">{{ tag | uppercase }}</span>
   </div>
 
   <div class="task-card__actions">
