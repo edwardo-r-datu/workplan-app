@@ -1,7 +1,71 @@
 <div class="workplan-board">
   <header class="workplan-board__header">
     <h1>Workplan Board</h1>
+    <button class="btn btn--primary" (click)="toggleAddForm()">
+      {{ showAddForm ? '✕ Cancel' : '+ Add Task' }}
+    </button>
   </header>
+
+  <!-- Template-driven quick-add form: uses ngForm, ngModel, required -->
+  <div class="quick-add" *ngIf="showAddForm">
+    <form #addForm="ngForm" (ngSubmit)="onAddTask(addForm)" novalidate>
+      <div class="quick-add__row">
+        <div class="form-group">
+          <label>Title *</label>
+          <input
+            name="title"
+            [(ngModel)]="newTask.title"
+            required
+            minlength="3"
+            class="form-control"
+            #titleField="ngModel"
+            placeholder="Task title"
+          />
+          <span class="field-error" *ngIf="titleField.invalid && titleField.touched">
+            Title is required (min 3 chars)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Assignee *</label>
+          <input
+            name="assignee"
+            [(ngModel)]="newTask.assignee"
+            required
+            class="form-control"
+            placeholder="Assignee name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Priority</label>
+          <select name="priority" [(ngModel)]="newTask.priority" class="form-control">
+            <option *ngFor="let p of priorityOptions" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Due Date *</label>
+          <input
+            type="date"
+            name="dueDate"
+            [(ngModel)]="newTask.dueDate"
+            required
+            class="form-control"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <input name="description" [(ngModel)]="newTask.description" class="form-control" placeholder="Optional description" />
+      </div>
+
+      <div class="quick-add__actions">
+        <button type="submit" class="btn btn--primary" [disabled]="addForm.invalid">Add Task</button>
+      </div>
+    </form>
+  </div>
 
   <p *ngIf="loading" class="state-msg">Loading tasks...</p>
   <p *ngIf="error" class="state-msg state-msg--error">{{ error }}</p>

@@ -49,6 +49,12 @@
   gap: 16px;
 }
 
+.field-error {
+  color: var(--priority-high);
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
 .form-control {
   padding: 8px 12px;
   border: 1px solid var(--color-border);

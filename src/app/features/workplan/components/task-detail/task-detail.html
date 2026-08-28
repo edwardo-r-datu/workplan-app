@@ -1,4 +1,4 @@
-<div class="task-detail" *ngIf="task">
+<div class="task-detail" *ngIf="task && form">
   <div class="task-detail__nav">
     <button class="btn btn--ghost" (click)="onBack()">← Back to Board</button>
   </div>
@@ -6,47 +6,61 @@
   <div class="task-detail__card">
     <h2>Edit Task</h2>
 
-    <div class="form-group">
-      <label>Title</label>
-      <input [(ngModel)]="task.title" class="form-control" appAutoFocus />
-    </div>
+    <!-- Reactive form: [formGroup] binds the FormGroup, formControlName binds individual controls -->
+    <form [formGroup]="form" (ngSubmit)="onSave()" novalidate>
 
-    <div class="form-group">
-      <label>Description</label>
-      <textarea [(ngModel)]="task.description" class="form-control" rows="3"></textarea>
-    </div>
-
-    <div class="form-row">
       <div class="form-group">
-        <label>Priority</label>
-        <select [(ngModel)]="task.priority" class="form-control">
-          <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
-        </select>
+        <label>Title *</label>
+        <input formControlName="title" class="form-control" appAutoFocus />
+        <span class="field-error" *ngIf="f['title'].invalid && f['title'].touched">
+          <span *ngIf="f['title'].errors?.['required']">Title is required.</span>
+          <span *ngIf="f['title'].errors?.['minlength']">Minimum 3 characters.</span>
+        </span>
       </div>
 
       <div class="form-group">
-        <label>Status</label>
-        <select [(ngModel)]="task.status" class="form-control">
-          <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Assignee</label>
-        <input [(ngModel)]="task.assignee" class="form-control" />
+        <label>Description</label>
+        <textarea formControlName="description" class="form-control" rows="3"></textarea>
       </div>
 
-      <div class="form-group">
-        <label>Due Date</label>
-        <input type="date" [(ngModel)]="task.dueDate" class="form-control" />
-      </div>
-    </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Priority *</label>
+          <select formControlName="priority" class="form-control">
+            <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+          </select>
+        </div>
 
-    <div class="task-detail__actions">
-      <button class="btn btn--ghost" (click)="onBack()">Cancel</button>
-      <button class="btn btn--primary" (click)="onSave()">Save Changes</button>
-    </div>
+        <div class="form-group">
+          <label>Status *</label>
+          <select formControlName="status" class="form-control">
+            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Assignee *</label>
+          <input formControlName="assignee" class="form-control" />
+          <span class="field-error" *ngIf="f['assignee'].invalid && f['assignee'].touched">
+            Assignee is required.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Due Date *</label>
+          <input type="date" formControlName="dueDate" class="form-control" />
+          <span class="field-error" *ngIf="f['dueDate'].invalid && f['dueDate'].touched">
+            Due date is required.
+          </span>
+        </div>
+      </div>
+
+      <div class="task-detail__actions">
+        <button type="button" class="btn btn--ghost" (click)="onBack()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid">Save Changes</button>
+      </div>
+    </form>
   </div>
 </div>
