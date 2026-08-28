@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Task, TaskStatus } from '../../../../core/models';
 
 @Component({
@@ -6,6 +6,8 @@ import { Task, TaskStatus } from '../../../../core/models';
   standalone: false,
   templateUrl: './task-list.html',
   styleUrl: './task-list.scss',
+  // OnPush + trackBy: list only re-renders when the tasks array reference changes
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskList {
   @Input() title!: string;

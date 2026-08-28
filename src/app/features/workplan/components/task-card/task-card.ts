@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Task, Priority, TaskStatus } from '../../../../core/models';
 
 @Component({
@@ -6,6 +6,9 @@ import { Task, Priority, TaskStatus } from '../../../../core/models';
   standalone: false,
   templateUrl: './task-card.html',
   styleUrl: './task-card.scss',
+  // OnPush: re-renders only when @Input references change, or an event/Observable emits
+  // Prevents unnecessary re-renders when parent change detection runs
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskCard {
   @Input() task!: Task;
