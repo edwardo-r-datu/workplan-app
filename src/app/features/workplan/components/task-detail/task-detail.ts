@@ -29,8 +29,9 @@ export class TaskDetail implements OnInit {
 
   onSave(): void {
     if (!this.task) return;
-    this.taskService.updateTask(this.task.id, this.task);
-    this.router.navigate(['/workplan']);
+    this.taskService.updateTask(this.task.id, this.task).subscribe(() => {
+      this.router.navigate(['/workplan']);
+    });
   }
 
   onBack(): void {

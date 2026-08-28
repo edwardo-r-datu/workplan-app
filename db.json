@@ -1,0 +1,64 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Set up project repository",
+      "description": "Initialize Git and push to GitHub.",
+      "priority": "HIGH",
+      "status": "DONE",
+      "assignee": "Wat",
+      "dueDate": "2026-08-27",
+      "createdAt": "2026-08-27T00:00:00.000Z",
+      "updatedAt": "2026-08-27T00:00:00.000Z",
+      "tags": ["setup", "devops"]
+    },
+    {
+      "id": 2,
+      "title": "Define Angular module architecture",
+      "description": "Create CoreModule, SharedModule, and WorkplanModule.",
+      "priority": "HIGH",
+      "status": "DONE",
+      "assignee": "Wat",
+      "dueDate": "2026-08-27",
+      "createdAt": "2026-08-27T00:00:00.000Z",
+      "updatedAt": "2026-08-27T00:00:00.000Z",
+      "tags": ["angular", "architecture"]
+    },
+    {
+      "id": 3,
+      "title": "Build task components",
+      "description": "Create board, list, and card components.",
+      "priority": "MEDIUM",
+      "status": "IN_PROGRESS",
+      "assignee": "Wat",
+      "dueDate": "2026-08-28",
+      "createdAt": "2026-08-27T00:00:00.000Z",
+      "updatedAt": "2026-08-27T00:00:00.000Z",
+      "tags": ["angular", "components"]
+    },
+    {
+      "id": 4,
+      "title": "Implement HTTP service with json-server",
+      "description": "Replace in-memory data with real REST API calls.",
+      "priority": "MEDIUM",
+      "status": "TODO",
+      "assignee": "Wat",
+      "dueDate": "2026-08-28",
+      "createdAt": "2026-08-27T00:00:00.000Z",
+      "updatedAt": "2026-08-27T00:00:00.000Z",
+      "tags": ["angular", "http"]
+    },
+    {
+      "id": 5,
+      "title": "Add NgRx state management",
+      "description": "Migrate task state to NgRx store with actions and effects.",
+      "priority": "LOW",
+      "status": "TODO",
+      "assignee": "Wat",
+      "dueDate": "2026-08-29",
+      "createdAt": "2026-08-27T00:00:00.000Z",
+      "updatedAt": "2026-08-27T00:00:00.000Z",
+      "tags": ["ngrx", "state"]
+    }
+  ]
+}

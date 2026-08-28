@@ -3,7 +3,10 @@
     <h1>Workplan Board</h1>
   </header>
 
-  <div class="workplan-board__columns">
+  <p *ngIf="loading" class="state-msg">Loading tasks...</p>
+  <p *ngIf="error" class="state-msg state-msg--error">{{ error }}</p>
+
+  <div class="workplan-board__columns" *ngIf="!loading && !error">
     <app-task-list
       title="To Do"
       [tasks]="getTasksByStatus(TaskStatus.Todo)"

@@ -11,13 +11,22 @@ import { TaskService } from '../../../../core/services/task';
 export class WorkplanBoard implements OnInit {
   readonly TaskStatus = TaskStatus;
   tasks: Task[] = [];
+  loading = true;
+  error = '';
 
-  // Angular's DI system resolves TaskService from the root injector and injects it here
   constructor(private taskService: TaskService) {}
 
   ngOnInit(): void {
-    // Subscribe to the observable — tasks update automatically whenever the service state changes
     this.taskService.tasks$.subscribe(tasks => (this.tasks = tasks));
+
+    // Fetch from API on load
+    this.taskService.loadTasks().subscribe({
+      next: () => (this.loading = false),
+      error: () => {
+        this.loading = false;
+        this.error = 'Failed to load tasks. Is the API server running? (npm run api)';
+      },
+    });
   }
 
   getTasksByStatus(status: TaskStatus): Task[] {
@@ -25,10 +34,10 @@ export class WorkplanBoard implements OnInit {
   }
 
   onStatusChanged({ task, status }: { task: Task; status: TaskStatus }): void {
-    this.taskService.updateTask(task.id, { status });
+    this.taskService.updateTask(task.id, { status }).subscribe();
   }
 
   onTaskDeleted(id: number): void {
-    this.taskService.deleteTask(id);
+    this.taskService.deleteTask(id).subscribe();
   }
 }

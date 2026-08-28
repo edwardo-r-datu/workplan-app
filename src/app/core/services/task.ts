@@ -1,110 +1,59 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Task, TaskStatus, Priority, CreateTaskDto, UpdateTaskDto } from '../models';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject, tap, catchError, throwError, switchMap } from 'rxjs';
+import { Task, CreateTaskDto, UpdateTaskDto } from '../models';
 
 @Injectable({
-  providedIn: 'root', // registered in the root injector — one singleton instance across the app
+  providedIn: 'root',
 })
 export class TaskService {
-  private nextId = 6;
+  private readonly apiUrl = 'http://localhost:3000/tasks';
 
-  private readonly initialTasks: Task[] = [
-    {
-      id: 1,
-      title: 'Set up project repository',
-      description: 'Initialize Git and push to GitHub.',
-      priority: Priority.High,
-      status: TaskStatus.Done,
-      assignee: 'Wat',
-      dueDate: '2026-08-27',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      tags: ['setup', 'devops'],
-    },
-    {
-      id: 2,
-      title: 'Define Angular module architecture',
-      description: 'Create CoreModule, SharedModule, and WorkplanModule.',
-      priority: Priority.High,
-      status: TaskStatus.Done,
-      assignee: 'Wat',
-      dueDate: '2026-08-27',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      tags: ['angular', 'architecture'],
-    },
-    {
-      id: 3,
-      title: 'Build task components',
-      description: 'Create board, list, and card components.',
-      priority: Priority.Medium,
-      status: TaskStatus.InProgress,
-      assignee: 'Wat',
-      dueDate: '2026-08-28',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      tags: ['angular', 'components'],
-    },
-    {
-      id: 4,
-      title: 'Implement HTTP service with json-server',
-      description: 'Replace in-memory data with real REST API calls.',
-      priority: Priority.Medium,
-      status: TaskStatus.Todo,
-      assignee: 'Wat',
-      dueDate: '2026-08-28',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      tags: ['angular', 'http'],
-    },
-    {
-      id: 5,
-      title: 'Add NgRx state management',
-      description: 'Migrate task state to NgRx store with actions and effects.',
-      priority: Priority.Low,
-      status: TaskStatus.Todo,
-      assignee: 'Wat',
-      dueDate: '2026-08-29',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      tags: ['ngrx', 'state'],
-    },
-  ];
+  // BehaviorSubject still acts as a local cache so the board reacts instantly
+  private tasksSubject = new BehaviorSubject<Task[]>([]);
+  tasks$ = this.tasksSubject.asObservable();
 
-  // BehaviorSubject holds current state and replays the latest value to new subscribers
-  private tasksSubject = new BehaviorSubject<Task[]>(this.initialTasks);
+  constructor(private http: HttpClient) {}
 
-  // Expose as read-only Observable — components cannot push values directly
-  tasks$: Observable<Task[]> = this.tasksSubject.asObservable();
-
-  getTasks(): Task[] {
-    return this.tasksSubject.getValue();
+  // GET /tasks — load all tasks and populate the local cache
+  loadTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl).pipe(
+      tap(tasks => this.tasksSubject.next(tasks)),        // side-effect: update cache
+      catchError(err => {
+        console.error('Failed to load tasks', err);
+        return throwError(() => err);                     // re-throw so the caller can handle it
+      }),
+    );
   }
 
   getTaskById(id: number): Task | undefined {
     return this.tasksSubject.getValue().find(t => t.id === id);
   }
 
-  createTask(dto: CreateTaskDto): Task {
+  // POST /tasks
+  createTask(dto: CreateTaskDto): Observable<Task> {
     const now = new Date().toISOString();
-    const newTask: Task = { ...dto, id: this.nextId++, createdAt: now, updatedAt: now };
-    this.tasksSubject.next([...this.getTasks(), newTask]);
-    return newTask;
+    const payload = { ...dto, createdAt: now, updatedAt: now };
+
+    return this.http.post<Task>(this.apiUrl, payload).pipe(
+      tap(created => this.tasksSubject.next([...this.tasksSubject.getValue(), created])),
+    );
   }
 
-  updateTask(id: number, dto: UpdateTaskDto): Task | undefined {
-    const tasks = this.getTasks();
-    const index = tasks.findIndex(t => t.id === id);
-    if (index === -1) return undefined;
-
-    const updated = { ...tasks[index], ...dto, updatedAt: new Date().toISOString() };
-    const next = [...tasks];
-    next[index] = updated;
-    this.tasksSubject.next(next);
-    return updated;
+  // PATCH /tasks/:id — send only changed fields
+  updateTask(id: number, dto: UpdateTaskDto): Observable<Task> {
+    return this.http.patch<Task>(`${this.apiUrl}/${id}`, { ...dto, updatedAt: new Date().toISOString() }).pipe(
+      tap(updated => {
+        const tasks = this.tasksSubject.getValue().map(t => (t.id === id ? updated : t));
+        this.tasksSubject.next(tasks);
+      }),
+    );
   }
 
-  deleteTask(id: number): void {
-    this.tasksSubject.next(this.getTasks().filter(t => t.id !== id));
+  // DELETE /tasks/:id
+  deleteTask(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.tasksSubject.next(this.tasksSubject.getValue().filter(t => t.id !== id))),
+    );
   }
 }
